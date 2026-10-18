@@ -1,0 +1,26 @@
+{
+  "name": "네이비1945",
+  "short_name": "NAVY1945",
+  "description": "프리깃에서 전함까지, 함대를 키워라",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#0a1830",
+  "theme_color": "#0a1830",
+  "lang": "ko",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
