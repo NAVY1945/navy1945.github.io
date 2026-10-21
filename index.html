@@ -359,6 +359,8 @@ body{background:var(--ink)}
 #combo.hot em{background:linear-gradient(90deg,rgba(226,89,63,.9),rgba(242,163,58,.9));border-color:#ffd84a;box-shadow:0 0 12px rgba(255,140,30,.6)}
 @keyframes cpop{0%{transform:scale(1.7)}100%{transform:scale(1)}}
 #flash{position:fixed;inset:0;background:#fff6dc;opacity:0;pointer-events:none;z-index:9}
+.acts .row:first-child .act{width:54px;height:54px;font-size:10px}.act{width:64px;height:64px;font-size:11px}.act.big{width:74px;height:74px}.act b{font-size:16px}.acts{gap:6px}.acts .row{gap:8px}
+@media (max-height:500px){.acts{gap:5px;left:8px;bottom:calc(8px + env(safe-area-inset-bottom,0px))}.acts .row{gap:6px}.acts .row:first-child .act{width:44px;height:44px;font-size:8.5px}.act{width:50px;height:50px;font-size:9px;border-width:1.5px}.act.big{width:58px;height:58px}.act b{font-size:13px}.act sup{top:4px;right:6px;font-size:9px;line-height:13px}.act.carpet b{font-size:16px}}
 @media (max-width:760px){.acts{gap:6px;left:8px}.acts .row{gap:7px}.acts .row:first-child .act{width:52px;height:52px;font-size:9.5px}.act{width:58px;height:58px;font-size:10px}.act.big{width:68px;height:68px}.act b{font-size:15px}}
 .act.strike .cd{background:conic-gradient(rgba(226,89,63,.35) var(--p,0%),transparent 0)}
 .act.strike.ready{box-shadow:0 0 0 3px rgba(226,89,63,.5);animation:pulse 1.2s ease-in-out infinite}
@@ -991,7 +993,7 @@ let DCS=null;const realSV=()=>DCS?Object.assign({},SV,DCS):SV;
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(realSV()))}catch(e){}};
 /* 1985 era: unlocks once the player has reached sea area 25; 2045 is teased at 50 */
 const ERA2=25,ERA3=50,era2On=()=>((realSV().best||0)>=ERA2-1);
-const hpnN=l=>l?1+Math.ceil(l/2):0,hpnInt=l=>Math.max(2.4,6.2-.6*l),hpnDmg=l=>70+28*l,ssmN=l=>l?1+Math.floor(l/2):0,ssmInt=l=>Math.max(.9,3-.4*l),ciwsP=l=>l?.3+.12*l:0,tomN=l=>l?6+4*l:0,tomDmg=l=>260*(1+.25*l);
+const hpnN=l=>l?1+Math.ceil(l/2):0,hpnInt=l=>Math.max(2.4,6.2-.6*l),hpnDmg=l=>70+28*l,ssmN=l=>l?1+Math.floor(l/2):0,ssmInt=l=>Math.max(.9,3-.4*l),ciwsP=l=>l?.3+.12*l:0,tomN=l=>l?6+4*l:0,tomCh=l=>Math.min(3,l||0),tomDmg=l=>260*(1+.2*l);
 function bsD(l){return l?20+5*l:0}function bsR(l){return l?15+3*l:0}function bsDur(l){return l?7+l:0}function bsN(l){return l?1+(l>=3)+(l>=5):0}
 const UPG={
  gun:{name:'주포',max:9,base:140,eff:(l,cls)=>{const c=NAT[SV.nat].c[cls],n=(c.foreG||[c.gun])[0][1];return`${calTxt(LAD[cls][Math.min(4,l)])} ${NUM[n]}${l>4?` · 개량 ${l-4}`:''}`}},
@@ -1008,7 +1010,7 @@ const UPG={
  hpn:{name:'하푼 미사일',max:6,base:2600,era:2,eff:l=>l?`${hpnN(l)}발 일제 · ${hpnInt(l).toFixed(1)}초마다`:'미장착'},
  ssm:{name:'시스패로',max:5,base:2200,era:2,eff:l=>l?`요격 ${ssmN(l)}발 · ${ssmInt(l).toFixed(1)}초마다`:'미장착'},
  ciws:{name:'CIWS 팰렁스',max:4,base:2000,era:2,eff:l=>l?`근접 요격 ${Math.round(ciwsP(l)*100)}%`:'미장착'},
- tom:{name:'토마호크',max:3,base:4200,era:2,eff:l=>l?`${tomN(l)}발 일제 · ${l}회 저장`:'미장착'},
+ tom:{name:'토마호크',max:6,base:4200,era:2,eff:l=>l?`${tomN(l)}발 일제 · ${tomCh(l)}회 저장`:'미장착'},
  bs:{name:'전투태세',max:6,base:650,eff:l=>l?`화력 +${bsD(l)}% · 장전 -${bsR(l)}% · ${bsDur(l)}초 · ${bsN(l)}회`:'미장착'},
 };
 for(const k in UPG)if(SV.up[k]==null)SV.up[k]=0;
@@ -1083,7 +1085,7 @@ function statRows(k,a,b){const kn=SPEC[SV.nat][SV.cls][3],f=(x,d=0)=>x.toFixed(d
     case'hpn':{const l=SV.up.hpn||0,n=Math.min(6,l+1);return[['일제 발수','발',hpnN(l),hpnN(n),0,4],['발사 간격','초',l?hpnInt(l):6.2,hpnInt(n),1,6.2,1],['한 발 피해','',l?hpnDmg(l):0,hpnDmg(n),0,hpnDmg(6)]]}
     case'ssm':{const l=SV.up.ssm||0,n=Math.min(5,l+1);return[['요격 발수','발',ssmN(l),ssmN(n),0,3],['발사 간격','초',l?ssmInt(l):3,ssmInt(n),1,3,1]]}
     case'ciws':{const l=SV.up.ciws||0,n=Math.min(4,l+1);return[['요격 확률','%',ciwsP(l)*100,ciwsP(n)*100,0,100]]}
-    case'tom':{const l=SV.up.tom||0,n=Math.min(3,l+1);return[['일제 발수','발',tomN(l),tomN(n),0,18],['한 발 피해','',l?tomDmg(l):0,tomDmg(n),0,tomDmg(3)],['저장 횟수','회',l,n,0,3]]}
+    case'tom':{const l=SV.up.tom||0,n=Math.min(6,l+1);return[['일제 발수','발',tomN(l),tomN(n),0,30],['한 발 피해','',l?tomDmg(l):0,tomDmg(n),0,tomDmg(6)],['저장 횟수','회',tomCh(l),tomCh(n),0,3]]}
     case'bs':{const l=SV.up.bs,n=Math.min(UPG.bs.max,l+1);return[['화력 증가','%',bsD(l),bsD(n),0,50],['장전 단축','%',bsR(l),bsR(n),0,33],['지속 시간','초',bsDur(l),bsDur(n),0,13],['저장 횟수','회',bsN(l),bsN(n),0,3]]}
     default:return[['저장 횟수','회',1+SV.up[k],1+Math.min(UPG[k].max,SV.up[k]+1),0,3]]}}
 function nextStats(k){const u=SV.up[k];SV.up[k]=Math.min(UPG[k].max,u+1);const s=stats();SV.up[k]=u;return s}
@@ -1252,6 +1254,7 @@ addEventListener('keydown',e=>{if(e.key==='Escape')$('rank').hidden=true});
 $('rkBtn').onclick=openRank;$('railWeek').onclick=()=>{lbTab='week';openRank()};
 /* in-game notices: newest first; the red dot shows until the latest one is opened */
 const NOTICES=[
+ ['2026-10-22','토마호크 강화 · 스킬 버튼 축소 · 숫자 폰트',['<b>토마호크</b> 개장이 Lv.6까지 늘어나요. 최대 <b>30발</b>을 한 번에 쏟아부어요 (저장은 최대 3회).','스킬이 많아져서 <b>스킬 버튼을 작게</b> 줄였어요. 특히 폰 가로 화면에서 전투 화면이 더 넓게 보여요.','숫자가 뭉개져 5와 8이 헷갈리던 문제를 고쳤어요. 숫자는 더 선명한 도트 폰트로 바뀌었어요.']],
  ['2026-10-21','1985 현대화 개장 · 시대 로드맵',['<b>해역 25</b>부터 <b>1985 현대 해전</b>이 시작돼요! 적은 더 세지는 대신 <b>떼로 몰려와요</b> — 미사일 고속정 무리를 시원하게 쓸어버리세요.','해역 25에 도달하면 드라이도크에 <b>현대화 개장</b>이 열려요: <b>하푼</b>(함대함 유도미사일), <b>시스패로</b>(함대공), <b>CIWS 팰렁스</b>(근접 방어), <b>토마호크</b>(F키 필살기, 화면 전체 폭격). 배 위에 발사기와 수직발사관이 실제로 붙어요.','항구 왼쪽 위 <b>시대 진행 바</b>를 누르면 1945 → 1985 → <b>2045 미래전</b>(레이저·360° 레이저 필살기·이온 엔진, 준비 중) 로드맵을 볼 수 있어요.','1985 해역에서는 공습이 <b>제트 공격기</b>, 전투기가 <b>제트 전투기</b>, 융단폭격이 <b>B-52 전략폭격기</b>로 바뀌어요.','융단폭격 때 느려지던 <b>슬로모션 효과를 없앴어요</b>.']],
  ['2026-10-18','일일 임무 · 오늘의 해역 · 주간 시즌 · 업적',['항구 오른쪽에 <b>📋 임무 · 🌊 오늘의 해역 · 🏆 시즌 · 🏅 업적</b> 버튼이 생겼어요.','<b>일일 임무</b> 3개와 <b>출석 보상</b>: 매일 자정에 새 임무가 나와요. 세 개 다 하면 보너스! 7일 연속 출석하면 보상 두 배.','<b>오늘의 해역</b>: 매일 바뀌는 같은 배·같은 개장으로 3분 승부. 강화 차이 없이 실력으로 오늘의 1등에 도전하세요.','<b>주간 시즌 랭킹</b>: 매주 월요일 0시에 새로 시작해요. 지난 시즌 TOP 3는 랭킹에 걸려요.','<b>업적 18개</b>: 달성하면 칭호와 <b>위장 도색</b>(스플린터·대즐·메저22·발트·북극·황금)을 받아요.','결과 화면에 <b>바로 재출격</b>, <b>다음 개장 목표</b>, 침몰 시 <b>위로 보급</b>이 생겼어요.','<b>"내 기록 깨봐"</b> 버튼으로 친구에게 도전장을 보내보세요. 친구가 링크로 들어오면 내 기록이 목표로 떠요.']],
  ['2026-10-17c','PC 단축키 · 일시정지',['<b>PC 단축키</b>: 화면 버튼 배치 그대로 <b>Q</b> 전투기 · <b>W</b> 전투태세 · <b>E</b> 수리 · <b>R</b> 정찰기 / <b>A</b> 어뢰 · <b>S</b> 공습 · <b>D</b> 융단폭격. 조함은 <b>방향키</b>로 해요.','<b>❚❚ 일시정지</b> 버튼이 생겼어요. <b>P</b>나 <b>Esc</b>로도 멈출 수 있고, 다른 앱이나 탭으로 넘어가면 자동으로 멈춰요.','한글 입력 상태에서도 단축키가 그대로 먹혀요.']],
@@ -1385,9 +1388,9 @@ function stepModern(dt){const u=SV.up,pg=player.g.position,hd=player.g.rotation.
       if(best){const sd=best.p.x-pg.x>0?1:-1,from=player.g.localToWorld(V(player.B*.74*Math.sign(Math.cos(hd))*sd,player.deckY(player.L*.05)+.5,player.L*.05)),dir=best.p.clone().sub(from);
         for(let i=0;i<3;i++)fx('glow',from.clone().addScaledVector(dir,i*.08),{life:.1,s0:.16,s1:.1,v:dir.clone().multiplyScalar(7),a:1});SFX.ciws(from);
         if(Math.random()<ciwsP(u.ciws)){if(best.k==='m'){killMsl(best.r);SFX.boom(.5,best.p)}else{best.r.hp-=2;if(best.r.hp<=0)downPlane(best.r)}}}}}
-  if(u.tom&&R.tomN<u.tom){R.tomCd-=dt*cRel();if(R.tomCd<=0){R.tomN++;R.tomCd=TOM_CD}}}
+  if(u.tom&&R.tomN<tomCh(u.tom)){R.tomCd-=dt*cRel();if(R.tomCd<=0){R.tomN++;R.tomCd=TOM_CD}}}
 function fireTom(){const l=SV.up.tom||0;if(mode!=='sea'||R.over||!l||R.tomN<=0)return;const pg=player.g.position,tg=foes.filter(f=>!f.sink&&f.g.position.distanceTo(pg)<70).sort((a,b)=>(b.boss?1:0)-(a.boss?1:0)||a.g.position.distanceTo(pg)-b.g.position.distanceTo(pg));
-  if(!tg.length){banner('토마호크로 노릴 적함이 없어요');return}R.tomN--;if(R.tomN<l&&R.tomCd<=0)R.tomCd=TOM_CD;const n=tomN(l);banner(`🚀 토마호크 ${n}발 일제 발사!`);R.shake=Math.max(R.shake,.5);
+  if(!tg.length){banner('토마호크로 노릴 적함이 없어요');return}R.tomN--;if(R.tomN<tomCh(l)&&R.tomCd<=0)R.tomCd=TOM_CD;const n=tomN(l);banner(`🚀 토마호크 ${n}발 일제 발사!`);R.shake=Math.max(R.shake,.5);
   for(let i=0;i<n;i++)setTimeout(()=>{if(mode!=='sea'||R.over)return;const from=player.g.localToWorld(V((i%2-.5)*player.B*.3,player.deckY(player.vlsZ||0)+.4,player.vlsZ||0));
     launchMsl({from,dir:V(0,1,0),tgt:{k:'f',r:tg[i%tg.length]},dmg:tomDmg(l)*cDmg(),spd:22,turn:2.2,life:8,kind:'tom'});fx('fire',from,{life:.35,s0:1,s1:2});fx('smoke',from,{life:2,s0:1,s1:3,a:.7,v:V(0,1,0)})},i*90)}
 Object.assign(SFX,{msl(p,kind){const v=attn(p)*(kind==='tom'?.5:kind==='foe'?.3:.32);if(v<.03||!canPlay('ms'+kind,kind==='tom'?60:90))return;
@@ -1404,7 +1407,7 @@ function eraGoal(){const b=realSV().best||0,reach=b+1;if(!era2On())return`<div c
   if(reach<ERA3)return`<div class="goal" style="border-color:#c58bff">🔒 <b>2045 미래전</b>까지 해역 ${ERA3-reach} 남음 · 레이저와 이온 엔진 (준비 중)</div>`;return''}
 function openEra(){const b=realSV().best||0,reach=b+1,on2=era2On();
   $('eraB').innerHTML=`<div class="era e1"><span class="tag">진행 중</span><h3>1945</h3><h4>함포의 시대</h4><ul><li>주포·부포·대공포 자동 사격</li><li>어뢰·공습·융단폭격</li><li>구축함에서 전함까지 진화</li></ul></div>
-    <div class="era e2" style="color:#9fe3c0"><span class="tag">${on2?'해금!':`해역 ${ERA2}`}</span><h3>1985</h3><h4>현대화 개장</h4><ul><li><b>하푼</b> 함대함 유도미사일 일제 발사</li><li><b>시스패로</b> 함대공 미사일 요격</li><li><b>CIWS 팰렁스</b> 근접 방어</li><li><b>토마호크</b> 필살기 — 화면 전체 폭격</li><li>공습은 <b>제트기</b>, 융단폭격은 <b>B-52</b></li><li>적 미사일 고속정 <b>떼</b>가 몰려와요</li></ul>
+    <div class="era e2" style="color:#9fe3c0"><span class="tag">${on2?'해금!':`해역 ${ERA2}`}</span><h3>1985</h3><h4>현대화 개장</h4><ul><li><b>하푼</b> 함대함 유도미사일 일제 발사</li><li><b>시스패로</b> 함대공 미사일 요격</li><li><b>CIWS 팰렁스</b> 근접 방어</li><li><b>토마호크</b> 필살기 — 최대 30발로 화면 전체 폭격</li><li>공습은 <b>제트기</b>, 융단폭격은 <b>B-52</b></li><li>적 미사일 고속정 <b>떼</b>가 몰려와요</li></ul>
       ${on2?'<p class="lk">드라이도크에서 개장할 수 있어요!</p>':`<div class="pg"><i style="width:${Math.min(100,b/(ERA2-1)*100)}%"></i></div><p class="lk">지금 해역 ${reach} · ${ERA2-reach}해역 남음</p>`}</div>
     <div class="era e3" style="color:#d9b3ff"><span class="tag">해역 ${ERA3} · 준비 중</span><h3>2045</h3><h4>미래전</h4><ul><li><b>레이저 포</b> — 빛의 속도로 꽂히는 단발 사격</li><li><b>360° 레이저 회전</b> 필살기 — 주변을 한 바퀴 쓸어버려요</li><li><b>레일건</b> 관통 주포 · <b>이온 엔진</b> 대시</li><li><b>위성 레이저 공습</b> — 우주에서 레이저를 내리꽂아요</li><li>에너지 실드 · 드론 편대</li></ul><div class="pg"><i style="width:${Math.max(0,Math.min(100,(b-(ERA2-1))/(ERA3-ERA2)*100))}%"></i></div><p class="lk">곧 공개 · 해역 ${ERA3}에서 만나요</p></div>`;
   $('eraM').hidden=false}
@@ -1660,7 +1663,7 @@ function clearBattle(){for(const q of msls){q.alive=false;q.m.visible=false}for(
 function ckStage(){return Math.max(1,(SV.ck&&SV.ck.stage)||1)}
 function startRun(dc){if(PS.dock)return;dc=dc&&dc.mod?dc:null;if(!dc&&DCS)dcRestore();mode='sea';setWinter(false);renderer.toneMappingExposure=.9;scene.fog.near=WU.uNear.value=95;scene.fog.far=WU.uFar.value=280;Object.assign(sun.shadow.camera,{left:-40,right:40,top:40,bottom:-40,far:150});sun.shadow.camera.updateProjectionMatrix();if(!dc)SV.runs++;save();$('port').hidden=true;$('hub').hidden=true;$('hud').hidden=false;$('result').hidden=true;$('hint').hidden=true;harbor.visible=false;WU.uAmp.value=1;clearBattle();camera.clearViewOffset();
   const st=stats(),s0=dc?4:ckStage();eraTint(dc?1:s0);CW=dc&&dc.mod[0]==='combo'?7.2:4.5;Object.assign(R,{dc:dc?{cfg:dc,score:0,tl:DC_T}:null,used:{strike:0,ft:0,carpet:0},dmAnn:[],rivalBeat:false,st,t:0,hp:st.maxHp,lastHit:-9,stage:s0,start:s0,tBase:s0>1?((SV.ck&&SV.ck.t)||0):0,stageKills:0,kills:0,coins:0,earned:0,spawnT:1.5,planeT:16,boss:null,bossDead:false,over:false,shake:0,
-    vx:0,vz:0,throttle:0,yawRate:0,aaT:0,torpT:0,repT:8,scoutT:0,scoutCd:0,zoom:1,ftCd:0,strike:0,carpet:0,combo:0,bestCombo:0,lastKill:-9,slowT:0,bsT:0,bsCd:0,ch:{torp:chMax('torp'),ft:chMax('ft'),sc:chMax('sc'),bs:chMax('bs')},paused:false,hold:false,hpnT:1.5,ssmT:.6,ciwsT:0,tomN:SV.up.tom||0,tomCd:TOM_CD,eraSeen:s0>=ERA2,wakeT:0,sunk:{DD:0,CL:0,CA:0,BB:0},planes:0,bosses:0});
+    vx:0,vz:0,throttle:0,yawRate:0,aaT:0,torpT:0,repT:8,scoutT:0,scoutCd:0,zoom:1,ftCd:0,strike:0,carpet:0,combo:0,bestCombo:0,lastKill:-9,slowT:0,bsT:0,bsCd:0,ch:{torp:chMax('torp'),ft:chMax('ft'),sc:chMax('sc'),bs:chMax('bs')},paused:false,hold:false,hpnT:1.5,ssmT:.6,ciwsT:0,tomN:tomCh(SV.up.tom),tomCd:TOM_CD,eraSeen:s0>=ERA2,wakeT:0,sunk:{DD:0,CL:0,CA:0,BB:0},planes:0,bosses:0});
   player.g.position.set(0,0,0);player.g.rotation.set(0,0,0);player.hullMat.emissive.setHex(0xff4a20);for(const m of player.mounts){m.obj.rotation.y=m.rest;m.cd=.5+Math.random()}
   banner(dc?`오늘의 해역 · ${dc.mod[1]} · 3분 승부`:s0>=ERA2?`1985 현대 해전 · 해역 ${s0}부터 재출격`:SV.rival&&!SV.rival.beat?`목표: ${SV.rival.n} 함장의 해역 ${SV.rival.st} 돌파`:R.stage>1?`해역 ${R.stage}부터 재출격 · 적 함대 접근`:'해역 1 · 적 함대 접근');setTimeout(()=>{if(mode!=='sea')return;tip('basics');if(SV.up.torp>0)tip('torp');tip('fighter');if(canScout())tip('scout');if(SV.up.bs>0)tip('stance')},600);$('joy').hidden=false;joyRest();hudUpdate()}
 function endRun(win){if(R.over)return;if(R.dc)return endDaily(win);R.over=true;R.hold=false;$('pause').hidden=true;const pf=PF(),ri0=rankIdx(pf.xp),rb=Math.round(R.coins*rankBonus(ri0));R.coins+=rb;SV.coins+=R.coins;SV.best=Math.max(SV.best,R.stage-1+(R.bossDead?1:0));
@@ -1906,7 +1909,7 @@ function actUpdate(){{const bb=$('bsBtn'),hb=SV.up.bs>0;bb.disabled=!hb;bb.class
   const tp=has&&R.ch.torp<=0?R.torpT/R.st.torpInt:0;$('torpCd').style.setProperty('--p',(tp*100)+'%');tb.classList.toggle('ready',has&&R.ch.torp>0);if(has)badge(tb,R.ch.torp,chMax('torp'));
   const rp=R.repT/REP_CD;$('repCd').style.setProperty('--p',(rp*100)+'%');rb.classList.toggle('ready',rp<=0&&R.hp<R.st.maxHp);
   if(tb.dataset.has!==String(has)){tb.dataset.has=String(has);tb.childNodes[2].textContent=has?'어뢰':'어뢰 미장착'}
-  {const mb=$('tomBtn'),tl=SV.up.tom||0;mb.hidden=!tl;if(tl){const p=R.tomN>0?0:R.tomCd/TOM_CD;$('tomCd').style.setProperty('--p',(p*100)+'%');mb.classList.toggle('ready',R.tomN>0);badge(mb,R.tomN,tl)}}drawMini()}
+  {const mb=$('tomBtn'),tl=SV.up.tom||0;mb.hidden=!tl;if(tl){const p=R.tomN>0?0:R.tomCd/TOM_CD;$('tomCd').style.setProperty('--p',(p*100)+'%');mb.classList.toggle('ready',R.tomN>0);badge(mb,R.tomN,tomCh(tl))}}drawMini()}
 function hudUpdate(){actUpdate();const r=R.hp/R.st.maxHp,b=$('hpB');b.style.width=Math.max(0,r*100)+'%';b.classList.toggle('low',r<.3);
   setT('hpT',`${Math.ceil(R.hp)} / ${Math.round(R.st.maxHp)}`);setT('coinB',fmt(R.coins));
   const bossOn=R.boss&&!R.bossDead;$('stageBox').classList.toggle('boss',!!bossOn);
